@@ -1,5 +1,4 @@
 # Agile-mgmt-dashboard
-This project is done for completion of the Infosys Springboard Internship
 
 
 A centralized platform built to support Agile teams in managing projects, tracking tasks, and visualizing performance with clarity, automation, and role-based control.
