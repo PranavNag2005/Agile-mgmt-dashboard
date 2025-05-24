@@ -296,6 +296,7 @@ def reject_user(id):
     if not session.get('admin_id'):
         return redirect(url_for('auth.home'))
     user = User.query.get(id)
+    username=user.name
     if user:
         user.status=2
         user_email = user.email
@@ -305,7 +306,7 @@ def reject_user(id):
             subject="Account Rejection Notification",
             recipients=[user_email],
         )
-        msg.body = f"Dear User,\n\nWe regret to inform you that your registration request has been rejected.\n\nBest Regards,\nAdmin Team"
+        msg.body = f"Dear {username},\n\nWe regret to inform you that your registration request has been rejected.\n\nBest Regards,\nAdmin Team"
         mail.send(msg)
 
         flash("User has been rejected and notified via email.", "success")
@@ -313,25 +314,64 @@ def reject_user(id):
         flash("User not found.", "warning")
     return redirect(url_for("admin.adminGetAllUser"))
 # Admin approve user
+# @admin.route('/approve-user/<int:id>')
+# def adminApprove(id):
+#     if not session.get('admin_id'):
+#         return redirect(url_for('auth.home'))
+#     User.query.filter_by(id=id).update(dict(status=1))
+#     db.session.commit()
+#     user = User.query.get(id)
+#     user_email = user.email
+#     username = user.name
+#     msg = Message(
+#             subject="Account Approval Notification",
+
+#             recipients=[user_email]
+#         )
+#     msg.body = f"Dear {username},\n\nWe kindly  inform you that your registration request has been Approved. Please you can login now \n\nBest Regards,\nAdmin Team"
+#     mail.send(msg)
+#     flash(f'{user.name}  has been approved and notified via email..', 'success')
+#     return redirect(url_for('admin.adminGetAllUser'))
 @admin.route('/approve-user/<int:id>')
 def adminApprove(id):
     if not session.get('admin_id'):
         return redirect(url_for('auth.home'))
-    User.query.filter_by(id=id).update(dict(status=1))
-    db.session.commit()
-    user = User.query.get(id)
-    user_email = user.email
-    username = user.name
-    msg = Message(
-            subject="Account Approval Notification",
 
-            recipients=[user_email]
-        )
-    msg.body = f"Dear User,\n\nWe kindly  inform you that your registration request has been Approved. Please you can login now \n\nBest Regards,\nAdmin Team"
-    mail.send(msg)
-    flash(f'{user.name}  has been approved and notified via email..', 'success')
+    try:
+        user = User.query.get(id)  # Get the user object first
+        if user:
+            user.status = 1  # Update the status
+            db.session.commit()
+
+            user_email = user.email
+            username = user.username  # Assuming the username field is 'username'
+
+            msg = Message(
+                subject="Account Approval Notification",
+                recipients=[user_email]
+            )
+
+            # Improved HTML Email with styled button
+            approval_link = url_for('auth.login', _external=True)  # Create login URL
+            msg.html = f"""
+            <p>Dear {username},</p>
+            <p>We are pleased to inform you that your registration request has been approved.</p>
+            <p><a href="{approval_link}" style="background-color:#4CAF50;border:none;color:white;padding:10px 20px;text-align:center;text-decoration:none;display:inline-block;font-size:16px;cursor:pointer;">Login to Your Account</a></p>
+            <p>Best Regards,</p>
+            <p>Admin Team</p>
+            """
+
+            mail.send(msg)
+            flash(f'{user.username} has been approved and notified via email.', 'success')
+        else:
+            flash('User not found.', 'warning')
+
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        flash(f"Error approving user: {str(e)}", "error")
+        # Consider logging the exception for debugging.
+
     return redirect(url_for('admin.adminGetAllUser'))
-
 # Admin change password
 @admin.route('/change-admin-password', methods=["POST", "GET"])
 def adminChangePassword():
@@ -421,7 +461,8 @@ def signup():
             subject="New User Registration Alert",
             recipients=['teamofadm1n123@gmail.com'],
             )
-            msg.body = f"Hello Admin,\n\nA new user has just registered on the Agile Management Dashboard.\n\nBest Regards,\nAdmin Team"
+            msg.body="Hello Admin,\n\nA new user has just registered on the Agile Management Dashboard.\n\nUser Details:\nUsername: {new_user.username}\nEmail: {new_user.email}\nRole: {new_user.role}\n\nBest Regards,\nAdmin Team"
+            
             mail.send(msg)
             return redirect(url_for('auth.login'))
         except Exception as e:
