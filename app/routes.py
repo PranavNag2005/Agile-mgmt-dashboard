@@ -183,8 +183,8 @@ def generate_mfa_qr_code(user_email,mfa_secret):
 
     return qr_code
 def create_initial_admin():
-    admin_email = 'infosysdhruv@gmail.com'
-    admin_password = bcrypt.generate_password_hash('123', 10)
+    admin_email = 'teamofadm1n123@gmail.com'
+    admin_password = bcrypt.generate_password_hash('12345', 10)
 
     # Check if an admin with the given email already exists
     admin_exists = Admin.query.filter_by(email=admin_email).first()
