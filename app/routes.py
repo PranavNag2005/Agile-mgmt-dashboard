@@ -344,7 +344,7 @@ def adminApprove(id):
             db.session.commit()
 
             user_email = user.email
-            username = user.username  # Assuming the username field is 'username'
+            username = user.name  # Assuming the username field is 'username'
 
             msg = Message(
                 subject="Account Approval Notification",
@@ -461,7 +461,7 @@ def signup():
             subject="New User Registration Alert",
             recipients=['teamofadm1n123@gmail.com'],
             )
-            msg.body="Hello Admin,\n\nA new user has just registered on the Agile Management Dashboard.\n\nUser Details:\nUsername: {new_user.username}\nEmail: {new_user.email}\nRole: {new_user.role}\n\nBest Regards,\nAdmin Team"
+            msg.body="Hello Admin,\n\nA new user has just registered on the Agile Management Dashboard.\n\nUser Details:\nUsername: {new_user.name}\n\nRole: {new_user.role}\n\nBest Regards,\nAdmin Team"
             
             mail.send(msg)
             return redirect(url_for('auth.login'))
