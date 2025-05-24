@@ -329,14 +329,14 @@ def adminApprove(id):
             recipients=[user_email]
         )
     # Improved HTML Email with styled button
-            approval_link = url_for('auth.login', _external=True)  # Create login URL
-            msg.html = f"""
-            <p>Dear {username},</p>
-            <p>We are pleased to inform you that your registration request has been approved.</p>
-            <p><a href="{approval_link}" style="background-color:#4CAF50;border:none;color:white;padding:10px 20px;text-align:center;text-decoration:none;display:inline-block;font-size:16px;cursor:pointer;">Login to Your Account</a></p>
-            <p>Best Regards,</p>
-            <p>Admin Team</p>
-            """
+    approval_link = url_for('auth.login', _external=True)  # Create login URL
+    msg.html = f"""
+    <p>Dear {username},</p>
+    <p>We are pleased to inform you that your registration request has been approved.</p>
+    <p><a href="{approval_link}" style="background-color:#4CAF50;border:none;color:white;padding:10px 20px;text-align:center;text-decoration:none;display:inline-block;font-size:16px;cursor:pointer;">Login to Your Account</a></p>
+    <p>Best Regards,</p>
+    <p>Admin Team</p>
+    """
     # msg.body = f"Dear {username},\n\nWe kindly  inform you that your registration request has been Approved. Please you can login now \n\nBest Regards,\nAdmin Team"
     mail.send(msg)
     flash(f'{user.name}  has been approved and notified via email..', 'success')
